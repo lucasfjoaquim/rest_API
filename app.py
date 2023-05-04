@@ -1,7 +1,7 @@
 import os
 import psycopg2
 from dotenv import load_dotenv
-from flask import Flask, request
+from flask import *
 
 load_dotenv()
 
@@ -37,7 +37,7 @@ def create_text():
     return "201"
 
 
-@app.route("/api/update/text")
+@app.route("/api/update/text", methods=["GET", "POST"])
 def update_text():
     data = request.get_json()
     text = data["text"]
@@ -48,7 +48,7 @@ def update_text():
     return "201"
 
 
-@app.route("/api/update/price")
+@app.route("/api/update/price", methods=["GET", "POST"])
 def update_price():
     data = request.get_json()
     price = data["price"]
@@ -67,7 +67,6 @@ def get_text():
             cursor.execute(SELECT_TEXT, (id,))
             texstos = cursor.fetchall()[0]
     return str(texstos)
-
 
 @app.get("/api/get/price")
 def get_price():
