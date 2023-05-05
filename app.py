@@ -39,7 +39,7 @@ def create_text():
 
 @app.route("/api/update/text", methods=["GET", "POST"])
 def update_text():
-    data = request.get_json()
+    data = json.loads(request.data)
     text = data["text"]
     id = data["id"]
     with connection:
@@ -50,7 +50,8 @@ def update_text():
 
 @app.route("/api/update/price", methods=["GET", "POST"])
 def update_price():
-    data = request.get_json()
+    data = json.loads(request.data)
+    print(data)
     price = data["price"]
     id = data["id"]
     with connection:
