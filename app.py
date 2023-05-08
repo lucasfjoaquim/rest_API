@@ -2,6 +2,8 @@ import os
 import psycopg2
 from dotenv import load_dotenv
 from flask import *
+from flask_cors import CORS
+
 
 load_dotenv()
 
@@ -11,8 +13,9 @@ SELECT_PRICE = "SELECT * FROM prices WHERE price_id = (%s)"
 SELECT_TEXT = "SELECT * FROM texts WHERE text_id = (%s)"
 UPDATE_TEXT = "UPDATE texts SET text = (%s) WHERE text_id = (%s)"
 UPDATE_PRICE = "UPDATE prices SET price = (%s) WHERE price_id = (%s)"
-
+SELECT_ALL_TEXT = "SELECT * FROM texts ORDER BY text_id"
 app = Flask(__name__)
+CORS(app)
 url = os.getenv("DATABASE_URL")
 connection = psycopg2.connect(url)
 
@@ -67,7 +70,11 @@ def get_text():
         with connection.cursor() as cursor:
             cursor.execute(SELECT_TEXT, (id,))
             texstos = cursor.fetchall()[0]
-    return str(texstos)
+            response = make_response(texstos[1])
+            response.mimetype = "text/plain"
+            print(response.mimetype)
+
+    return response
 
 @app.get("/api/get/price")
 def get_price():
@@ -76,7 +83,14 @@ def get_price():
         with connection.cursor() as cursor:
             cursor.execute(SELECT_PRICE, (id,))
             precos = cursor.fetchall()[0]
-    return str(precos)
+    return str(precos[1])
 
-
+@app.get("/api/get/all/text")
+def get_all_texts():
+    with connection:
+        with connection.cursor() as cursor:
+            cursor.execute(SELECT_ALL_TEXT)
+            texstos = cursor.fetchall()
+            texstos = dict(texstos)
+    return jsonify(texstos)
 
